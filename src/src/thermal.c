@@ -1,18 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int getTemperature(int zone)
+#include "sacinterface.h"
+
+int getTemperature(sac_int zone)
 {
     char path[128];
-    snprintf(path, sizeof(path), "/sys/class/thermal/thermal_zone%d/temp", zone);
+    snprintf(path, sizeof(path), "/sys/class/thermal/thermal_zone%" PRIisac "/temp", zone);
 
     FILE *fp = fopen(path, "r");
     if (!fp) {
         return 0;
     }
 
-    int temp;
-    if (fscanf(fp, "%d", &temp) <= 0) {
+    int res;
+    if (fscanf(fp, "%d", &res) <= 0) {
         perror("fscanf");
         return 0;
     }
@@ -21,5 +23,5 @@ int getTemperature(int zone)
         perror("fclose");
     }
 
-    return temp;
+    return res;
 }

@@ -1,0 +1,28 @@
+module Perf;
+
+use ControlFlow: { TheControlFlow };
+
+export all;
+
+external uint perfTypeHardware();
+    #pragma linkobj "src/perf.o"
+external ulong perfCounterInsns();
+    #pragma linkobj "src/perf.o"
+external ulong perfCounterCycles();
+    #pragma linkobj "src/perf.o"
+
+external int perfEventCreate(uint type, ulong counter);
+    #pragma effect TheControlFlow
+    #pragma linkobj "src/perf.o"
+
+external int perfEventStop(int event);
+    #pragma effect TheControlFlow
+    #pragma linkobj "src/perf.o"
+
+external int perfEventReset(int event);
+    #pragma effect TheControlFlow
+    #pragma linkobj "src/perf.o"
+
+external ulong perfEventRead(int event);
+    #pragma effect TheControlFlow
+    #pragma linkobj "src/perf.o"

@@ -4,13 +4,13 @@
 #include "sac.h"
 #include "sacinterface.h"
 
-static long long energy_uj(int package, int subzone)
+static long long energy_uj(sac_int package, sac_int subzone)
 {
     char path[128];
     if (subzone < 0) {
-        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%d/energy_uj", package);
+        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%" PRIisac "/energy_uj", package);
     } else {
-        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%d/intel-rapl:%d:%d/energy_uj", package, package, subzone);
+        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%" PRIisac "/intel-rapl:%" PRIisac ":%" PRIisac "/energy_uj", package, package, subzone);
     }
 
     FILE *fp = fopen(path, "r");
@@ -31,13 +31,13 @@ static long long energy_uj(int package, int subzone)
     return res;
 }
 
-static long long max_energy_range_uj(int package, int subzone)
+static long long max_energy_range_uj(sac_int package, sac_int subzone)
 {
     char path[128];
     if (subzone < 0) {
-        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%d/max_energy_range_uj", package);
+        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%" PRIisac "/max_energy_range_uj", package);
     } else {
-        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%d/intel-rapl:%d:%d/max_energy_range_uj", package, package, subzone);
+        snprintf(path, sizeof(path), "/sys/class/powercap/intel-rapl/intel-rapl:%" PRIisac "/intel-rapl:%" PRIisac ":%" PRIisac "/max_energy_range_uj", package, package, subzone);
     }
 
     FILE *fp = fopen(path, "r");
@@ -59,12 +59,12 @@ static long long max_energy_range_uj(int package, int subzone)
     return res;
 }
 
-long long raplStart(int package, int subzone)
+long long raplStart(sac_int package, sac_int subzone)
 {
     return energy_uj(package, subzone);
 }
 
-long long raplStop(int package, int subzone, long long energy_start)
+long long raplStop(sac_int package, sac_int subzone, long long energy_start)
 {
     if (energy_start == 0) {
         return 0;
@@ -97,8 +97,8 @@ long long powerLimit(void)
     return value;
 }
 
-int numThreads(void)
+sac_int numThreads(void)
 {
     // Plus one for the queen
-    return SAC_MT_cnt_worker_bees + 1;
+    return (sac_int)(SAC_MT_cnt_worker_bees + 1);
 }

@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "sacinterface.h"
+
 /**
- * The received json looks as follows:
+ * For reading whole-system energy consumption statistics, provided by the INA260 chip available on the Software Energy Lab runners.
  *
+ * The received json looks as follows:
+ * ```json
  * {"electricity_consumed_current":%f,"measurements":%d,"steady_time":%d,"electricity_consumed_total":%f,"power_draw":%f}
+ * ```
  */
-static double read_energy_stats(void)
+static double inaRead(void)
 {
     const char *url = getenv("ENERGY_STATS");
     if (!url) {
@@ -53,11 +58,11 @@ static double read_energy_stats(void)
 
 double inaStart(void)
 {
-    return read_energy_stats();
+    return inaRead();
 }
 
 double inaStop(double start)
 {
-    double end = read_energy_stats();
+    double end = inaRead();
     return end - start;
 }

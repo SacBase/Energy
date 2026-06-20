@@ -8,7 +8,7 @@ export all;
 
 external int getTemperature(int zone);
     #pragma effect TheControlFlow
-    #pragma linkobj "src/temp.o"
+    #pragma linkobj "src/thermal.o"
     #pragma linksign [0,1]
 
 int getTemperature()
