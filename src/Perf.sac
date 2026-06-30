@@ -6,14 +6,36 @@ export all;
 
 external uint perfTypeHardware();
     #pragma linkobj "src/perf.o"
+external uint perfTypeSoftware();
+    #pragma linkobj "src/perf.o"
 external ulong perfCounterInsns();
     #pragma linkobj "src/perf.o"
 external ulong perfCounterCycles();
     #pragma linkobj "src/perf.o"
 
-external int perfEventCreate(uint type, ulong counter);
+external int perfEventCreate(uint type, ulong counter, int pid, int cpu);
     #pragma effect TheControlFlow
     #pragma linkobj "src/perf.o"
+
+/**
+ * This measures the calling process/thread on any CPU.
+ *
+ * pid == 0 and cpu == -1
+ */
+int perfEventCreateProcess(uint type, ulong counter)
+{
+    return perfEventCreate(type, counter, 0, _neg_S_(1));
+}
+
+/**
+ * This measures all processes/threads on the specified CPU.
+ *
+ * pid == -1 and cpu >= 0
+ */
+int perfEventCreateCore(uint type, ulong counter)
+{
+    return perfEventCreate(type, counter, _neg_S_(1), 0);
+}
 
 external int perfEventStop(int event);
     #pragma effect TheControlFlow

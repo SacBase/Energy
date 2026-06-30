@@ -10,10 +10,11 @@
 #include "sacinterface.h"
 
 unsigned int perfTypeHardware(void) { return PERF_TYPE_HARDWARE; }
+unsigned int perfTypeSoftware(void) { return PERF_TYPE_SOFTWARE; }
 unsigned long perfCounterInsns(void) { return PERF_COUNT_HW_INSTRUCTIONS; }
 unsigned long perfCounterCycles(void) { return PERF_COUNT_HW_CPU_CYCLES; }
 
-sac_int perfEventCreate(unsigned int type, unsigned long config)
+sac_int perfEventCreate(unsigned int type, unsigned long config, sac_int pid, sac_int cpu)
 {
     struct perf_event_attr pe;
     memset(&pe, 0, sizeof(struct perf_event_attr));
@@ -24,7 +25,7 @@ sac_int perfEventCreate(unsigned int type, unsigned long config)
     pe.exclude_kernel = 0;
     pe.exclude_hv = 0;
 
-    int fd = syscall(__NR_perf_event_open, &pe, 0, -1, -1, 0);
+    int fd = syscall(__NR_perf_event_open, &pe, (pid_t)pid, (int)cpu, -1, 0);
     if (fd == -1) {
         return -1;
     }
