@@ -14,8 +14,8 @@ external ulong perfCounterCycles();
     #pragma linkobj "src/perf.o"
 
 external int perfEventCreate(uint type, ulong counter, int pid, int cpu);
-    #pragma effect TheControlFlow
     #pragma linkobj "src/perf.o"
+    #pragma effect TheControlFlow
 
 /**
  * This measures the calling process/thread on any CPU.
@@ -37,14 +37,26 @@ int perfEventCreateCore(uint type, ulong counter)
     return perfEventCreate(type, counter, _neg_S_(1), 0);
 }
 
-external int perfEventStop(int event);
-    #pragma effect TheControlFlow
+external int perfEventStopS(int event);
     #pragma linkobj "src/perf.o"
+    #pragma linkname "perfEventStop"
+    #pragma effect TheControlFlow
 
-external int perfEventReset(int event);
-    #pragma effect TheControlFlow
+void perfEventStop(int event)
+{
+    status = perfEventStopS(event);
+}
+
+external int perfEventResetS(int event);
     #pragma linkobj "src/perf.o"
+    #pragma linkname "perfEventReset"
+    #pragma effect TheControlFlow
+
+void perfEventReset(int event)
+{
+    status = perfEventResetS(event);
+}
 
 external ulong perfEventRead(int event);
-    #pragma effect TheControlFlow
     #pragma linkobj "src/perf.o"
+    #pragma effect TheControlFlow
