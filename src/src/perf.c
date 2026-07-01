@@ -65,7 +65,7 @@ sac_int perfEventReset(sac_int fd)
 unsigned long perfEventRead(sac_int fd)
 {
     unsigned long res;
-    if (read((int)fd, &res, sizeof(unsigned long))) {
+    if (read((int)fd, &res, sizeof(res)) != sizeof(res)) {
         perror("perf_event_read");
         return 0;
     }
