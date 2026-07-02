@@ -9,10 +9,14 @@
 
 #include "sacinterface.h"
 
+// Types
 unsigned int perfTypeHardware(void) { return PERF_TYPE_HARDWARE; }
 unsigned int perfTypeSoftware(void) { return PERF_TYPE_SOFTWARE; }
+// Counters
 unsigned long perfCounterInsns(void) { return PERF_COUNT_HW_INSTRUCTIONS; }
 unsigned long perfCounterCycles(void) { return PERF_COUNT_HW_CPU_CYCLES; }
+unsigned long perfCounterCacheMisses(void) { return PERF_COUNT_HW_CACHE_MISSES; }
+unsigned long perfCounterBranchMisses(void) { return PERF_COUNT_HW_BRANCH_MISSES; }
 
 sac_int perfEventCreate(unsigned int type, unsigned long config, sac_int pid, sac_int cpu)
 {
@@ -25,7 +29,7 @@ sac_int perfEventCreate(unsigned int type, unsigned long config, sac_int pid, sa
     pe.exclude_kernel = 0;
     pe.exclude_hv = 0;
 
-    int fd = syscall(__NR_perf_event_open, &pe, (pid_t)pid, (int)cpu, -1, 0);
+    int fd = syscall(__NR_perf_event_open, &pe, (pid_t)((int)pid), (int)cpu, -1, 0);
     if (fd == -1) {
         return -1;
     }
@@ -38,30 +42,6 @@ sac_int perfEventCreate(unsigned int type, unsigned long config, sac_int pid, sa
     return (sac_int)fd;
 }
 
-sac_int perfEventStop(sac_int fd)
-{
-    if (ioctl((int)fd, PERF_EVENT_IOC_DISABLE, 0) < 0) {
-        perror("perf_event_disable");
-        return -1;
-    }
-
-    if (close((int)fd) < 0) {
-        perror("perf_event_close");
-        return -1;
-    }
-
-    return 0;
-}
-
-sac_int perfEventReset(sac_int fd)
-{
-    if (ioctl((int)fd, PERF_EVENT_IOC_RESET, 0) < 0) {
-        perror("perf_event_reset");
-        return -1;
-    }
-    return 0;
-}
-
 unsigned long perfEventRead(sac_int fd)
 {
     unsigned long res;
@@ -70,4 +50,22 @@ unsigned long perfEventRead(sac_int fd)
         return 0;
     }
     return res;
+}
+
+void perfEventReset(sac_int fd)
+{
+    if (ioctl((int)fd, PERF_EVENT_IOC_RESET, 0) < 0) {
+        perror("perf_event_reset");
+    }
+}
+
+void perfEventStop(sac_int fd)
+{
+    if (ioctl((int)fd, PERF_EVENT_IOC_DISABLE, 0) < 0) {
+        perror("perf_event_disable");
+    }
+
+    if (close((int)fd) < 0) {
+        perror("perf_event_close");
+    }
 }

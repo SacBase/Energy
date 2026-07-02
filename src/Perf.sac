@@ -4,59 +4,33 @@ use ControlFlow: { TheControlFlow };
 
 export all;
 
+// Types
 external uint perfTypeHardware();
     #pragma linkobj "src/perf.o"
 external uint perfTypeSoftware();
     #pragma linkobj "src/perf.o"
+// Counters
 external ulong perfCounterInsns();
     #pragma linkobj "src/perf.o"
 external ulong perfCounterCycles();
+    #pragma linkobj "src/perf.o"
+external ulong perfCounterCacheMisses();
+    #pragma linkobj "src/perf.o"
+external ulong perfCounterBranchMisses();
     #pragma linkobj "src/perf.o"
 
 external int perfEventCreate(uint type, ulong counter, int pid, int cpu);
     #pragma linkobj "src/perf.o"
     #pragma effect TheControlFlow
 
-/**
- * This measures the calling process/thread on any CPU.
- *
- * pid == 0 and cpu == -1
- */
-int perfEventCreateProcess(uint type, ulong counter)
-{
-    return perfEventCreate(type, counter, 0, _neg_S_(1));
-}
-
-/**
- * This measures all processes/threads on the specified CPU.
- *
- * pid == -1 and cpu >= 0
- */
-int perfEventCreateCore(uint type, ulong counter)
-{
-    return perfEventCreate(type, counter, _neg_S_(1), 0);
-}
-
-external int perfEventStopS(int event);
-    #pragma linkobj "src/perf.o"
-    #pragma linkname "perfEventStop"
-    #pragma effect TheControlFlow
-
-void perfEventStop(int event)
-{
-    status = perfEventStopS(event);
-}
-
-external int perfEventResetS(int event);
-    #pragma linkobj "src/perf.o"
-    #pragma linkname "perfEventReset"
-    #pragma effect TheControlFlow
-
-void perfEventReset(int event)
-{
-    status = perfEventResetS(event);
-}
-
 external ulong perfEventRead(int event);
+    #pragma linkobj "src/perf.o"
+    #pragma effect TheControlFlow
+
+external void perfEventReset(int event);
+    #pragma linkobj "src/perf.o"
+    #pragma effect TheControlFlow
+
+external void perfEventStop(int event);
     #pragma linkobj "src/perf.o"
     #pragma effect TheControlFlow

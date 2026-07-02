@@ -87,7 +87,7 @@ long long powerLimit(void)
 
     FILE *fp = fopen(path, "r");
     if (fp == NULL) {
-        return -1;
+        return 0;
     }
 
     long long value;
